@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="author" content="LCH">  
+	<meta name="keywords" content="Html5,Test,LCH">
+	
+	<title>Avalon~</title>   <!--I'm comment--> 
+	<!--<link href="./static/css/style.css" rel="stylesheet" type="text/css" media="screen">--> 
+	<link rel="stylesheet" href="css/w3.css"/>
+	<link rel="stylesheet" href="css/multiselect.css" />
+	<link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/live/3.1/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-firestore.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/4.10.1/firebase-messaging.js"></script>
+	
+	<script type="text/javascript" src="js/multiselect.js"></script>
+	<script src="js/canvasAutoResizer.js"></script>
+	<script src="js/avalon.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.4.3.js"></script>
+	
+	<!-- item select -->
+	<link rel="stylesheet" type="text/css" href="css/lib/control/iconselect.css" >
+	<script type="text/javascript" src="lib/control/iconselect.js"></script>        
+	<script type="text/javascript" src="lib/iscroll.js"></script>
+	
+	<style type="text/css">
+	.empSelectHead {
+		display: block;
+		width: 120px;
+		height: 34px;
+		padding: 3px 6px;
+		font-size: 18px;
+		line-height: 1.42857143;
+		color: #555;
+		background-color: #fff;
+		background-image: none;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+		        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+		-webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+		     -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+		        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+	}
+
+	.center{
+		margin: 0px auto;
+	}
+	#container{
+		padding: 40px 10px 0; 
+	}
+	#container,
+	#switchDiv{
+		max-width: 970px;
+		margin: auto;
+	}
+	
+	.page-text-style{
+		width:650px;
+		height:100px;
+		font-size:50px;
+		text-align:center;
+	}
+	
+	.p-center{
+		font-size:30px;
+		text-align:center;
+	}
+
+	.option-btn{
+		font-size:30px;
+		text-align:center;
+	}
+	<!-- checkbox start -->
+	label:before {
+	  content: url("https://cdn1.iconfinder.com/data/icons/windows8_icons_iconpharm/26/unchecked_checkbox.png");
+	  position: absolute;
+	  z-index: 100;
+	}
+	:checked+label:before {
+	  content: url("https://cdn1.iconfinder.com/data/icons/windows8_icons_iconpharm/26/checked_checkbox.png");
+	}
+	input[type=checkbox] {
+	  display: none;
+	}
+	<!-- checkbox end -->
+</style>
+	
+</head>
+<body>
+
+<div class = "container firebase-traning">
+	<input id = "txtEmail" type="email" placeholder = "Email">
+	<input id = "txtPassword" type="password" placeholder = "Password">
+	<button id = "btnLogin" class="btn btn-action">log in</button>
+	<button id = "btnSignUp" class="btn btn-secondary">Sign Up</button>
+	<button id = "btnLogout" class="btn btn-action hide">Log out</button>
+	<br>
+	INFO1: <input type="text" id="info1"><br>
+	INFO2: <input type="text" id="info2"><br>
+	<button id="save_button">SAVE</button>
+	<button id="clear_button">CLEAR</button>
+	<button id="load_button">LOAD</button>
+	
+	<ul>
+	<li id="list"></li>
+	</ul>
+
+</div>
+	<div id="loginPage" class="page container center">
+		<input placeholder="輸入暱稱" id="playerName" class="page-text-style"></input><br>
+	    <div id="my-icon-select"></div>
+		<button id="loginButton" class="btn-primary page-text-style">開始遊戲</button><br>
+		<span id="selected-text" name="selected-text" class="page-text-style" readonly></span>
+	</div>	
+
+	<div id="roomPage">
+		<div id="roomPage" class="page container">
+			<button id="returnLoginPage" class="btn-info page-text-style">回上一頁</button><br>
+			<button id="createRoom" class="btn-info page-text-style">創建房間</button><br>
+			<button id="joinGame" class="btn-info page-text-style">進入房間</button><br>
+			<input placeholder="&nbsp;輸入房號" id="joinRoomNumber" class="page-text-style"></input>
+		</div>
+	</div>
+
+	<div id="gamePage" class="container">
+		<div class="container" style="background-color:#82FF82;padding:0px;">
+			<button class="option-btn btn-warning" id="returnRoomPage">離開房間</button>
+			<button class="option-btn btn-success" id="gameStart">開始</button>
+			<button class="option-btn btn-info" id="godButton">湖中女神</button>
+			<span class="option-btn">&nbsp;&nbsp;&nbsp;房號 ： </span><font class="option-btn" id="roomNumber"></font>
+		</div>
+		<div class="container" id="chooseCharactor">
+		玩家數量: 
+		<select id="gameMember">
+		　<option value="5" selected>5</option>
+		　<option value="6">6</option>
+		　<option value="7">7</option>
+		　<option value="8">8</option>
+		　<option value="9">9</option>
+		　<option value="10">10</option>		
+		</select>
+		派西維爾:
+		<select id="isPercival">
+		  <option value="1" selected>on</option>
+		  <option value="0">off</option>
+		</select>
+		<span id="gameCharacter"></span>
+		</div>
+		<div class="container" id="restartArea"></div>
+		<div class="container" id="boardDiv">
+		<span id="annouce" class="option-btn"></span>
+		<div class="container">
+			<table border="1">
+				<tbody>
+					<tr>
+						<th id="t1-1"></th>
+						<th id="t2-1"></th>
+						<th id="t3-1"></th>
+						<th id="t4-1"></th>
+						<th id="t5-1"></th>
+					</tr>
+					<tr>
+						<td id="t1-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+						<td id="t2-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+						<th id="t3-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+						<th id="t4-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+						<th id="t5-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<canvas id="cvs" width="800" height="600" style="border:1px solid #000000"></canvas>
+		<div class="container">
+			<table border="0">
+				<tbody>
+					<tr>
+						<th id="P1"></th>
+						<th id="P2"></th>
+						<th id="P3"></th>
+					</tr>             
+					<tr>              
+						<th id="P4"></th>
+						<th id="P5"></th>
+						<th id="P6"></th>
+					</tr>             
+					<tr>              
+						<th id="P7"></th>
+						<th id="P8"></th>
+						<th id="P9"></th>
+					</tr>
+				</tbody>
+			</table>
+			<div class="container" id="chooseYesOrNoDiv">
+				<input type="checkbox" class="chooseYesOrNoClass" data-value="yes" id="yes"/><label for="yes"><img src="images/avalon/yes.jpg" alt="" border=3 height=200 width=200></img></label>
+				<input type="checkbox" class="chooseYesOrNoClass" data-value="no" id="no"/><label for="no"><img src="images/avalon/no.jpg" alt="" border=3 height=200 width=200></img></label>
+				<button id="chooseYesOrNoBtn" class="page-text-style btn-info">贊成/反對</button>
+			</div>
+			<div class="container" id="chooseSuccessOrFailDiv">
+				<input type="checkbox" class="chooseSuccessOrFailClass" data-value="yes" id="yes"/><label for="yes"><img src="images/avalon/success.jpg" alt="" border=3 height=200 width=200></img></label>
+				<input type="checkbox" class="chooseSuccessOrFailClass" data-value="no" id="no"/><label for="no"><img src="images/avalon/fail.jpg" alt="" border=3 height=200 width=200></img></label>
+				<button id="chooseSuccessOrFailBtn" class="page-text-style btn-info">成功/失敗</button>
+			</div>
+			<div class="container">
+				<button id="voteStart" class="page-text-style btn-warning">執行任務</button><br>
+				<button id="showYourCharacter" class="page-text-style btn-success">我是誰</button><br>
+			</div>
+		</div>
+		</div>
+	</div>
+	
+<pre id="object"></pre>
+</body>
